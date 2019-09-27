@@ -14,12 +14,21 @@ class ViewController: UIViewController {
         return .portrait
     }
     
-    @IBOutlet weak var canvasView: CustomUIView!
+    @IBOutlet weak var canvasView: CustomUIView! {
+        didSet {
+            for view in canvasView.subviews {
+                let panGestr = UIPanGestureRecognizer(target: view, action: #selector(CustomUIView.handlePanGesture(gesture:)))
+                view.addGestureRecognizer(panGestr)
+                print("added pan gesture recognizer to view")
+            }
+        }
+    }
+    
     @IBOutlet var colourButtonArray: [UIButton]!
     @IBOutlet weak var undoButton: UIButton!
     @IBOutlet weak var redoButton: UIButton!
     @IBOutlet weak var sizeSlider: UISlider!
-    @IBOutlet weak var cropButton: UIButton!
+    @IBOutlet weak var moveButton: UIButton!
     
     @IBAction func clearCanvas(_ sender: UIButton) {
         canvasView.clear()
@@ -41,8 +50,22 @@ class ViewController: UIViewController {
         canvasView.mode = .brush
     }
     
-    @IBAction func cropButton(_ sender: UIButton) {
-        
+//    var tapPoint = CGPoint()
+    
+    @IBAction func fillBUttonTap(_ sender: UIButton) {
+//        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(clicked))
+//        canvasView.addGestureRecognizer(tapGesture)
+//        tapPoint = tapGesture.location(in: canvasView)
+//        print(tapPoint)
+    }
+    
+//    @objc func clicked(sender: UITapGestureRecognizer) {
+//
+//        canvasView.fill(at: tapPoint)
+//    }
+    
+    @IBAction func moveButton(_ sender: UIButton) {
+        canvasView.mode = .move
     }
     
     @IBAction func colourButtonTap(_ sender: UIButton) {
@@ -70,7 +93,7 @@ class ViewController: UIViewController {
         }
         
         if let cropButtonImage = UIImage(named: "crop") {
-            cropButton.setImage(resizeImage(image: cropButtonImage, targetSize: CGSize(width: 35, height: 35
+            moveButton.setImage(resizeImage(image: cropButtonImage, targetSize: CGSize(width: 35, height: 35
             )), for: .normal)
         }
     }

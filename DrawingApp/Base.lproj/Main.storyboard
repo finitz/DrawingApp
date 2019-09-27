@@ -25,7 +25,7 @@
                                     <constraint firstAttribute="width" secondItem="iVB-xq-UtP" secondAttribute="height" multiplier="187:258" id="yuB-Nc-cNH"/>
                                 </constraints>
                             </view>
-                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="20" minValue="5" maxValue="70" translatesAutoresizingMaskIntoConstraints="NO" id="jQk-QX-iGq">
+                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="8" minValue="1" maxValue="70" translatesAutoresizingMaskIntoConstraints="NO" id="jQk-QX-iGq">
                                 <rect key="frame" x="18" y="714" width="378" height="31"/>
                                 <color key="minimumTrackTintColor" red="0.57380741830000004" green="0.56553578380000002" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <color key="maximumTrackTintColor" red="0.83741801979999997" green="0.83743780850000005" blue="0.83742713930000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -173,9 +173,12 @@
                                             <constraint firstAttribute="width" constant="50" id="OUu-eu-vry"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="40"/>
-                                        <state key="normal">
+                                        <state key="normal" backgroundImage="bucket">
                                             <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         </state>
+                                        <connections>
+                                            <action selector="fillBUttonTap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="2Z6-c5-FIP"/>
+                                        </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hTn-eO-opj">
                                         <rect key="frame" x="162" y="9" width="50" height="50"/>
@@ -184,11 +187,11 @@
                                             <constraint firstAttribute="width" secondItem="hTn-eO-opj" secondAttribute="height" multiplier="1:1" id="yVi-hy-23k"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                        <state key="normal">
+                                        <state key="normal" backgroundImage="move">
                                             <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         </state>
                                         <connections>
-                                            <action selector="cropButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="nKC-6l-CCN"/>
+                                            <action selector="moveButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="nKC-6l-CCN"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="m1g-zs-jbf">
@@ -281,7 +284,7 @@
                     </view>
                     <connections>
                         <outlet property="canvasView" destination="iVB-xq-UtP" id="tY3-4F-1Lr"/>
-                        <outlet property="cropButton" destination="hTn-eO-opj" id="hIr-6H-kN6"/>
+                        <outlet property="moveButton" destination="hTn-eO-opj" id="hIr-6H-kN6"/>
                         <outlet property="redoButton" destination="m1x-qq-iIj" id="8nR-OD-8Kh"/>
                         <outlet property="sizeSlider" destination="jQk-QX-iGq" id="umV-QH-UdY"/>
                         <outlet property="undoButton" destination="zFt-2J-Wgw" id="4X6-O3-e07"/>
@@ -307,8 +310,10 @@
         </scene>
     </scenes>
     <resources>
+        <image name="bucket" width="256" height="256"/>
         <image name="delete" width="256" height="256"/>
         <image name="eraser" width="256" height="256"/>
+        <image name="move" width="256" height="256"/>
         <image name="paint-brush" width="256" height="256"/>
     </resources>
 </document>

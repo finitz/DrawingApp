@@ -18,26 +18,30 @@ class CustomUIView: UIView {
     }
     */
     
-    struct PathWithContext {
+    struct PathWithColour {
         let line: UIBezierPath
-        let colour: UIColor
+        var colour: UIColor
     }
     
     enum Mode {
         case brush
         case eraser
+        case move
     }
     
     var strokeColour = #colorLiteral(red: 0.8889197335, green: 0.78421344, blue: 0.1864610223, alpha: 1)
     var eraserColour = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
-    var strokeSize = 20
+    var strokeSize = 8
     var mode = Mode.brush
     var path = UIBezierPath()
 
-    var undoPathArray = [PathWithContext]()
-    var redoPath: PathWithContext? = nil
+    var pathArray = [PathWithColour]()
     
-    let imageView = UIImageView()
+    let drawingView = UIImageView()
+    
+    var layerArray = [UIImageView]()
+    var redoLayerArray = [UIImageView]()
+    var redoLayer = UIImageView()
     
     
     override init(frame: CGRect) {
@@ -53,8 +57,8 @@ class CustomUIView: UIView {
     }
     
     func setup() {
-        imageView.frame = bounds
-        self.addSubview(imageView)
+        drawingView.frame = bounds
+        self.addSubview(drawingView)
     }
     
     func setupPath() {
@@ -62,35 +66,73 @@ class CustomUIView: UIView {
         path.lineWidth = CGFloat(strokeSize)
         path.lineCapStyle = .round
         path.lineJoinStyle = .round
-        
+    }
+    
+//    func addPanGestureRecognizer(to view: UIImageView) {
+////        view.isUserInteractionEnabled = true
+//
+//    }
+//
+    @objc func handlePanGesture(gesture: UIPanGestureRecognizer) {
+
+//        swit ges case gesture.
+
+        print("pan action")
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        let touch = touches.first!
-        setupPath()
-        path.move(to: touch.location(in: self))
-        updateImageView()
+//        if mode != .move {
+            let touch = touches.first!
+            setupPath()
+            path.move(to: touch.location(in: self))
+            updateImageView()
+//        }
+        
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        let touch = touches.first!
-        path.addLine(to: touch.location(in: self))
-        updateImageView()
+//        if mode != .move {
+            let touch = touches.first!
+            path.addLine(to: touch.location(in: self))
+            updateImageView()
+//        }
+        
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        let touch = touches.first!
-        endTouches(at: touch.location(in: self))
+//        if mode != .move {
+            let touch = touches.first!
+            endTouches(at: touch.location(in: self))
+            
+            if mode == .brush {
+                pathArray.append(PathWithColour(line: path, colour: strokeColour))
+            }
+            
+            UIGraphicsBeginImageContextWithOptions(bounds.size, false, 0)
+            if mode == .eraser {
+                eraserColour.setStroke()
+            } else {
+                strokeColour.setStroke()
+            }
+            path.stroke(with: .normal, alpha: 1.0)
+            let newLayerImage = UIGraphicsGetImageFromCurrentImageContext()
+            UIGraphicsEndImageContext()
+            let newLayer = UIImageView(image: newLayerImage)
+            //        addPanGestureRecognizer(to: newLayer)
+            layerArray.append(newLayer)
+            self.addSubview(newLayer)
+            self.bringSubviewToFront(drawingView)
+            
+            redoLayerArray.removeAll()
+//        }
         
-        if mode == .brush {
-            undoPathArray.append(PathWithContext(line: path, colour: strokeColour))
-        }
-        canUndo = true
     }
     
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        let touch = touches.first!
-        endTouches(at: touch.location(in: self))
+        if mode != .move {
+            let touch = touches.first!
+            endTouches(at: touch.location(in: self))
+        }
     }
     
     func endTouches(at point: CGPoint) {
@@ -100,70 +142,69 @@ class CustomUIView: UIView {
     
     func updateImageView() {
         UIGraphicsBeginImageContextWithOptions(bounds.size, false, 0)
-        imageView.image?.draw(in: bounds)
-       
+
         if mode == .eraser {
             eraserColour.setStroke()
         } else {
             strokeColour.setStroke()
         }
         path.stroke(with: .normal, alpha: 1.0)
-        
+
         let img = UIGraphicsGetImageFromCurrentImageContext()
-        
+
         UIGraphicsEndImageContext()
-        imageView.image = img
-        
+        drawingView.image = img
+
         setNeedsDisplay()
     }
     
     func clear() {
-        imageView.image = nil
-
-        undoPathArray.removeAll()
-        redoPath = nil
+        drawingView.image = nil
+        
+        layerArray.removeAll()
+        pathArray.removeAll()
+        redoLayerArray.removeAll()
+        
+        for view in self.subviews {
+            view.removeFromSuperview()
+        }
+        self.addSubview(drawingView)
     }
     
-    var canUndo = false
-    var canRedo = false
-    
-    func undo() {        
-        if !undoPathArray.isEmpty, canUndo {
-            if let redoPath = undoPathArray.popLast() {
-                self.redoPath = redoPath
-                UIGraphicsBeginImageContextWithOptions(bounds.size, false, 0)
-                for path in undoPathArray {
-                    path.colour.setStroke()
-                    path.line.stroke(with: .normal, alpha: 1.0)
-                }
-                let img = UIGraphicsGetImageFromCurrentImageContext()
-                UIGraphicsEndImageContext()
-                imageView.image = img
-                setNeedsDisplay()
-                
-                canRedo = true
+    func undo() {
+        drawingView.image = nil
+        
+        if !layerArray.isEmpty {
+            if let redoLayer = layerArray.popLast() {
+                redoLayerArray.append(redoLayer)
+                redoLayer.removeFromSuperview()
+                print("removed from superview")
             }
         }
     }
 
     func redo() {
-        if let redoPath = self.redoPath, canRedo {
-            canUndo = false
-            
-            UIGraphicsBeginImageContextWithOptions(bounds.size, false, 0)
-            imageView.image?.draw(in: bounds)
-            
-            redoPath.colour.setStroke()
-            redoPath.line.stroke()
-            
-            undoPathArray.append(redoPath)
-            
-            let img = UIGraphicsGetImageFromCurrentImageContext()
-            UIGraphicsEndImageContext()
-            imageView.image = img
-            setNeedsDisplay()
-            
-            canRedo = false
+        if let redo = redoLayerArray.popLast() {
+            self.addSubview(redo)
+            layerArray.append(redo)
         }
+        self.bringSubviewToFront(drawingView)
     }
+    
+//    func fill(at point: CGPoint) {
+//        for i in undoPathArray.indices {
+//            if undoPathArray[i].line.contains(point){
+//                undoPathArray[i].colour = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
+//                print("set colour to black")
+//            }
+//        }
+//        UIGraphicsBeginImageContextWithOptions(bounds.size, false, 0)
+//        for path in undoPathArray {
+//            path.colour.setStroke()
+//            path.line.stroke(with: .normal, alpha: 1.0)
+//        }
+//        let img = UIGraphicsGetImageFromCurrentImageContext()
+//        UIGraphicsEndImageContext()
+//        imageView.image = img
+//    }
 }
