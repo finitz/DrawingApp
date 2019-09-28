@@ -191,7 +191,7 @@
                                             <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         </state>
                                         <connections>
-                                            <action selector="moveButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="nKC-6l-CCN"/>
+                                            <action selector="moveLayer:" destination="BYZ-38-t0r" eventType="touchUpInside" id="nKC-6l-CCN"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="m1g-zs-jbf">

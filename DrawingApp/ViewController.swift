@@ -14,15 +14,17 @@ class ViewController: UIViewController {
         return .portrait
     }
     
-    @IBOutlet weak var canvasView: CustomUIView! {
-        didSet {
-            for view in canvasView.subviews {
-                let panGestr = UIPanGestureRecognizer(target: view, action: #selector(CustomUIView.handlePanGesture(gesture:)))
-                view.addGestureRecognizer(panGestr)
-                print("added pan gesture recognizer to view")
-            }
-        }
-    }
+    @IBOutlet weak var canvasView: CustomUIView!
+//        {
+//        didSet {
+////            canvasView.drawingView.isUserInteractionEnabled = true
+////            tapGestr = UITapGestureRecognizer(target: canvasView.drawingView, action: #selector(handleTap(gesture:)))
+////            if let gestr = tapGestr {
+////                canvasView.drawingView.addGestureRecognizer(gestr)
+////            }
+//
+//        }
+//    }
     
     @IBOutlet var colourButtonArray: [UIButton]!
     @IBOutlet weak var undoButton: UIButton!
@@ -48,24 +50,68 @@ class ViewController: UIViewController {
     
     @IBAction func brushMode(_ sender: UIButton) {
         canvasView.mode = .brush
+        for view in canvasView.subviews {
+            if view.gestureRecognizers != nil {
+                for gestr in view.gestureRecognizers! {
+                    view.removeGestureRecognizer(gestr)
+                    print("removed gesture from view \(view)")
+                }
+            }
+        }
     }
     
-//    var tapPoint = CGPoint()
+    var panGestr: UIPanGestureRecognizer?
+    var tapGestr: UITapGestureRecognizer?
+    
+    
+//    @objc func handleTap(gesture: UITapGestureRecognizer) {
+//
+//        print("tap")
+//
+//    }
+    
+    @IBAction func moveLayer(_ sender: UIButton) {
+        canvasView.mode = .move
+        
+        canvasView.drawingView.isUserInteractionEnabled = true
+        tapGestr = UITapGestureRecognizer(target: canvasView.drawingView, action: #selector(UIImageView.handleTap(gesture:)))
+        if let gestr = tapGestr {
+            canvasView.drawingView.addGestureRecognizer(gestr)
+            print("added tap recognizer to view drawingView")
+
+        }
+        
+        
+        
+//        for view in canvasView.subviews {
+//            view.isUserInteractionEnabled = true
+//            tapGestr = UITapGestureRecognizer(target: view, action: #selector(UIImageView.handleTap(gesture:)))
+//            if let gestr = tapGestr {
+//                view.addGestureRecognizer(gestr)
+//                print("added tap recognizer to view \(view)")
+//            }
+//        }
+        
+        
+//        for view in canvasView.subviews {
+//            view.isUserInteractionEnabled = true
+//            panGestr = UIPanGestureRecognizer(target: view, action: #selector(UIImageView.handlePanGesture(gesture:)))
+//            if let gestr = panGestr {
+//                //gestr.isEnabled = true
+//                //gestr.delaysTouchesEnded = true
+//                view.addGestureRecognizer(gestr)
+//                print("added pan gesture recognizer to view \(view)")
+//            }
+//        }
+    }
+    
+    
     
     @IBAction func fillBUttonTap(_ sender: UIButton) {
 //        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(clicked))
 //        canvasView.addGestureRecognizer(tapGesture)
 //        tapPoint = tapGesture.location(in: canvasView)
 //        print(tapPoint)
-    }
-    
-//    @objc func clicked(sender: UITapGestureRecognizer) {
-//
-//        canvasView.fill(at: tapPoint)
-//    }
-    
-    @IBAction func moveButton(_ sender: UIButton) {
-        canvasView.mode = .move
     }
     
     @IBAction func colourButtonTap(_ sender: UIButton) {
@@ -80,6 +126,7 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
     }
 
     override func loadView() {
@@ -92,10 +139,6 @@ class ViewController: UIViewController {
             redoButton.setImage(resizeImage(image: redoButtonImage, targetSize: CGSize(width: 30, height: 30)), for: .normal)
         }
         
-        if let cropButtonImage = UIImage(named: "crop") {
-            moveButton.setImage(resizeImage(image: cropButtonImage, targetSize: CGSize(width: 35, height: 35
-            )), for: .normal)
-        }
     }
     
     func resizeImage(image: UIImage, targetSize: CGSize) -> UIImage {
