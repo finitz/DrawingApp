@@ -60,7 +60,6 @@ class ViewController: UIViewController {
         }
     }
     
-    var panGestr: UIPanGestureRecognizer?
     var tapGestr: UITapGestureRecognizer?
     
     
@@ -73,7 +72,7 @@ class ViewController: UIViewController {
     @IBAction func moveLayer(_ sender: UIButton) {
         canvasView.mode = .move
         
-        canvasView.drawingView.isUserInteractionEnabled = true
+//        canvasView.drawingView.isUserInteractionEnabled = true
         tapGestr = UITapGestureRecognizer(target: canvasView.drawingView, action: #selector(UIImageView.handleTap(gesture:)))
         if let gestr = tapGestr {
             canvasView.drawingView.addGestureRecognizer(gestr)
@@ -91,18 +90,20 @@ class ViewController: UIViewController {
 //                print("added tap recognizer to view \(view)")
 //            }
 //        }
+        var panGestr: UIPanGestureRecognizer?
+
         
-        
-//        for view in canvasView.subviews {
-//            view.isUserInteractionEnabled = true
-//            panGestr = UIPanGestureRecognizer(target: view, action: #selector(UIImageView.handlePanGesture(gesture:)))
-//            if let gestr = panGestr {
-//                //gestr.isEnabled = true
-//                //gestr.delaysTouchesEnded = true
-//                view.addGestureRecognizer(gestr)
-//                print("added pan gesture recognizer to view \(view)")
-//            }
-//        }
+        for view in canvasView.subviews {
+            view.isUserInteractionEnabled = true
+//            print(view.isUserInteractionEnabled)
+            panGestr = UIPanGestureRecognizer(target: view, action: #selector(UIImageView.handlePanGesture(gesture:)))
+            if let gestr = panGestr {
+                //gestr.isEnabled = true
+                //gestr.delaysTouchesEnded = true
+                view.addGestureRecognizer(gestr)
+                print("added pan gesture recognizer to view \(view)")
+            }
+        }
     }
     
     
