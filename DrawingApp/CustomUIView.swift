@@ -190,14 +190,12 @@ class CustomUIView: UIView {
     
     @objc func handleTap(gesture: UITapGestureRecognizer) {
         guard gesture.view != nil, self.subviews.count != 1 else { return }
-        print("tap")
         
         if gesture.state == .ended {
             for (i, view) in self.subviews.enumerated() {
                 if view.toImageView().alphaAtPoint(point: gesture.location(in: view)) != 0.0 {
-                        indexOfViewToBeRemoved = i
-                        print(i)
-                    }
+                    indexOfViewToBeRemoved = i
+                }
             }
             
             if let index = indexOfViewToBeRemoved, self.subviews.count != 1 {
