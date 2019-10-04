@@ -15,17 +15,6 @@ class ViewController: UIViewController {
     }
     
     @IBOutlet weak var canvasView: CustomUIView!
-//        {
-//        didSet {
-////            canvasView.drawingView.isUserInteractionEnabled = true
-////            tapGestr = UITapGestureRecognizer(target: canvasView.drawingView, action: #selector(handleTap(gesture:)))
-////            if let gestr = tapGestr {
-////                canvasView.drawingView.addGestureRecognizer(gestr)
-////            }
-//
-//        }
-//    }
-    
     @IBOutlet var colourButtonArray: [UIButton]!
     @IBOutlet weak var undoButton: UIButton!
     @IBOutlet weak var redoButton: UIButton!
@@ -50,69 +39,23 @@ class ViewController: UIViewController {
     
     @IBAction func brushMode(_ sender: UIButton) {
         canvasView.mode = .brush
-        for view in canvasView.subviews {
-            if view.gestureRecognizers != nil {
-                for gestr in view.gestureRecognizers! {
-                    view.removeGestureRecognizer(gestr)
-                    print("removed gesture from view \(view)")
-                }
-            }
+        if let panGestr = panGestr {
+            canvasView.removeGestureRecognizer(panGestr)
         }
     }
     
-    var tapGestr: UITapGestureRecognizer?
+    var panGestr: UIPanGestureRecognizer?
     
-    
-//    @objc func handleTap(gesture: UITapGestureRecognizer) {
-//
-//        print("tap")
-//
-//    }
-    
+        
     @IBAction func moveLayer(_ sender: UIButton) {
         canvasView.mode = .move
-        
-//        canvasView.drawingView.isUserInteractionEnabled = true
-        tapGestr = UITapGestureRecognizer(target: canvasView.drawingView, action: #selector(UIImageView.handleTap(gesture:)))
-        if let gestr = tapGestr {
-            canvasView.drawingView.addGestureRecognizer(gestr)
-            print("added tap recognizer to view drawingView")
+        panGestr = UIPanGestureRecognizer(target: canvasView, action: #selector(CustomUIView.handlePanGesture(gesture:)))
 
-        }
-        
-        
-        
-//        for view in canvasView.subviews {
-//            view.isUserInteractionEnabled = true
-//            tapGestr = UITapGestureRecognizer(target: view, action: #selector(UIImageView.handleTap(gesture:)))
-//            if let gestr = tapGestr {
-//                view.addGestureRecognizer(gestr)
-//                print("added tap recognizer to view \(view)")
-//            }
-//        }
-        var panGestr: UIPanGestureRecognizer?
-
-        
-        for view in canvasView.subviews {
-            view.isUserInteractionEnabled = true
-//            print(view.isUserInteractionEnabled)
-            panGestr = UIPanGestureRecognizer(target: view, action: #selector(UIImageView.handlePanGesture(gesture:)))
-            if let gestr = panGestr {
-                //gestr.isEnabled = true
-                //gestr.delaysTouchesEnded = true
-                view.addGestureRecognizer(gestr)
-                print("added pan gesture recognizer to view \(view)")
-            }
-        }
+        canvasView.addGestureRecognizer(panGestr!)
     }
     
-    
-    
     @IBAction func fillBUttonTap(_ sender: UIButton) {
-//        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(clicked))
-//        canvasView.addGestureRecognizer(tapGesture)
-//        tapPoint = tapGesture.location(in: canvasView)
-//        print(tapPoint)
+        
     }
     
     @IBAction func colourButtonTap(_ sender: UIButton) {
@@ -126,8 +69,7 @@ class ViewController: UIViewController {
     }
     
     override func viewDidLoad() {
-        super.viewDidLoad()
-        
+        super.viewDidLoad() 
     }
 
     override func loadView() {

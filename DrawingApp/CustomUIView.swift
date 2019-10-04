@@ -9,14 +9,6 @@
 import UIKit
 
 class CustomUIView: UIView {
-
-    /*
-    // Only override draw() if you perform custom drawing.
-    // An empty implementation adversely affects performance during animation.
-    override func draw(_ rect: CGRect) {
-        // Drawing code
-    }
-    */
     
     struct PathWithColour {
         let line: UIBezierPath
@@ -32,7 +24,7 @@ class CustomUIView: UIView {
     
     var strokeColour = #colorLiteral(red: 0.8889197335, green: 0.78421344, blue: 0.1864610223, alpha: 1)
     var eraserColour = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
-    var strokeSize = 8
+    var strokeSize = 15
     var mode = Mode.brush
     var path = UIBezierPath()
 
@@ -45,15 +37,11 @@ class CustomUIView: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
-//        addPanGestureRecognizer(to: drawingView)
         setup()
     }
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-//        addPanGestureRecognizer(to: drawingView)
-
         setup()
     }
     
@@ -76,6 +64,7 @@ class CustomUIView: UIView {
             path.move(to: touch.location(in: self))
             updateImageView()
         }
+        
     }
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -159,6 +148,7 @@ class CustomUIView: UIView {
             view.removeFromSuperview()
         }
         self.addSubview(drawingView)
+        mode = .brush
     }
     
     func undo() {
@@ -181,23 +171,41 @@ class CustomUIView: UIView {
         self.bringSubviewToFront(drawingView)
     }
     
-    
-//    func fill(at point: CGPoint) {
-//        for i in undoPathArray.indices {
-//            if undoPathArray[i].line.contains(point){
-//                undoPathArray[i].colour = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
-//                print("set colour to black")
-//            }
-//        }
-//        UIGraphicsBeginImageContextWithOptions(bounds.size, false, 0)
-//        for path in undoPathArray {
-//            path.colour.setStroke()
-//            path.line.stroke(with: .normal, alpha: 1.0)
-//        }
-//        let img = UIGraphicsGetImageFromCurrentImageContext()
-//        UIGraphicsEndImageContext()
-//        imageView.image = img
+//    func pointInNewSystem(_ point: CGPoint, _ layerIndex: Int) -> CGPoint {
+//        return CGPoint(x: point.x - (self.bounds.minX - self.subviews[layerIndex].frame.minX),
+//                       y: point.y - (self.bounds.minY - self.subviews[layerIndex].frame.minY))
 //    }
+    
+    var moveLayerIndex: Int?
+        
+    @objc func handlePanGesture(gesture: UIPanGestureRecognizer) {
+        switch gesture.state {
+        case .began:
+            
+            drawingView.image = nil
+            for (i, view) in self.subviews.enumerated() {
+                if view.toImageView().alphaAtPoint(point: gesture.location(in: view)) != 0.0 {
+                        moveLayerIndex = i
+                        print("IF 2")
+                    }
+            }
+
+        case .changed:
+            let translation = gesture.translation(in: gesture.view)
+            guard let index = moveLayerIndex else {return}
+            self.subviews[index].center = CGPoint(x: self.subviews[index].center.x + translation.x, y: self.subviews[index].center.y + translation.y)
+            
+            gesture.setTranslation(CGPoint.zero, in: gesture.view)
+            
+        case .ended:
+            print("ended")
+            moveLayerIndex = nil
+
+        default:
+            break
+        }
+        }
+    
 }
 
 extension UIImageView {
@@ -220,6 +228,24 @@ extension UIImageView {
         
         return floatAlpha
     }
+    
+}
+
+extension UIImage {
+    func getPixelColor(pos: CGPoint) -> UIColor {
+
+        let pixelData = self.cgImage!.dataProvider!.data
+        let data: UnsafePointer<UInt8> = CFDataGetBytePtr(pixelData)
+
+        let pixelInfo: Int = ((Int(self.size.width) * Int(pos.y)) + Int(pos.x)) * 4
+
+        let r = CGFloat(data[pixelInfo]) / CGFloat(255.0)
+        let g = CGFloat(data[pixelInfo+1]) / CGFloat(255.0)
+        let b = CGFloat(data[pixelInfo+2]) / CGFloat(255.0)
+        let a = CGFloat(data[pixelInfo+3]) / CGFloat(255.0)
+
+        return UIColor(red: r, green: g, blue: b, alpha: a)
+    }
 }
 
 extension UIView {
@@ -232,29 +258,10 @@ extension UIView {
     }
 }
 
-extension UIImageView {
-    
-    @objc func handleTap(gesture: UITapGestureRecognizer) {
-        if let currentImageView = gesture.view?.toImageView() {
-            let tapLocation = gesture.location(in: gesture.view)
-            print(currentImageView.alphaAtPoint(point: tapLocation))
-        }
-//        if let view = gesture.view {
-////            let tapLocation = gesture.l
-//            //take the last imageView, where the path contains tapLocation
-//            //add a panGesture to that view
-//        }
-        print("tap")
+extension CGPoint {
+    func distance(from b: CGPoint) -> CGFloat {
+        let xDist = self.x - b.x
+        let yDist = self.y - b.y
+        return CGFloat(sqrt(xDist * xDist + yDist * yDist))
     }
-    
-    @objc func handlePanGesture(gesture: UIPanGestureRecognizer) {
-        //perform the move only if the touch begins inside the path and nowhere else
-        let translation = gesture.translation(in: gesture.view)
-        if let view = gesture.view {
-            view.center = CGPoint(x: view.center.x + translation.x, y: view.center.y + translation.y)
-        }
-        gesture.setTranslation(CGPoint.zero, in: gesture.view)
-    }
-    
 }
-
