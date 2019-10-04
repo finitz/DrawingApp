@@ -20,9 +20,22 @@ class ViewController: UIViewController {
     @IBOutlet weak var redoButton: UIButton!
     @IBOutlet weak var sizeSlider: UISlider!
     @IBOutlet weak var moveButton: UIButton!
+    var panGesture: UIPanGestureRecognizer!
+    var tapGesture: UITapGestureRecognizer!
+
+    func setupGestures() {
+        panGesture = UIPanGestureRecognizer(target: canvasView, action: #selector(CustomUIView.handlePanGesture(gesture:)))
+        tapGesture = UITapGestureRecognizer(target: canvasView, action: #selector(CustomUIView.handleTap(gesture:)))
+        canvasView.addGestureRecognizer(panGesture)
+        canvasView.addGestureRecognizer(tapGesture)
+        panGesture.isEnabled = false
+        tapGesture.isEnabled = false
+    }
     
     @IBAction func clearCanvas(_ sender: UIButton) {
         canvasView.clear()
+        panGesture.isEnabled = false
+        tapGesture.isEnabled = false
     }
     
     @IBAction func undoBtuttonTap(_ sender: UIButton) {
@@ -33,31 +46,28 @@ class ViewController: UIViewController {
         canvasView.redo()
     }
     
-    @IBAction func eraserMode(_ sender: UIButton) {
+    @IBAction func eraserButtonTap(_ sender: UIButton) {
         canvasView.mode = .eraser
+        tapGesture.isEnabled = true
+        panGesture.isEnabled = false
     }
     
-    @IBAction func brushMode(_ sender: UIButton) {
+    @IBAction func brushButtonTap(_ sender: UIButton) {
         canvasView.mode = .brush
-        if let panGestr = panGestr {
-            canvasView.removeGestureRecognizer(panGestr)
-        }
+        panGesture.isEnabled = false
     }
     
-    var panGestr: UIPanGestureRecognizer?
+    @IBAction func markerPenButtonTap(_ sender: UIButton) {
+        canvasView.mode = .marker
+        panGesture.isEnabled = false
+    }
     
-        
-    @IBAction func moveLayer(_ sender: UIButton) {
+    @IBAction func moveButtonTap(_ sender: UIButton) {
         canvasView.mode = .move
-        panGestr = UIPanGestureRecognizer(target: canvasView, action: #selector(CustomUIView.handlePanGesture(gesture:)))
-
-        canvasView.addGestureRecognizer(panGestr!)
+        tapGesture.isEnabled = false
+        panGesture.isEnabled = true
     }
-    
-    @IBAction func fillBUttonTap(_ sender: UIButton) {
         
-    }
-    
     @IBAction func colourButtonTap(_ sender: UIButton) {
         if let newColour = sender.backgroundColor {
             canvasView.strokeColour = newColour
@@ -69,7 +79,9 @@ class ViewController: UIViewController {
     }
     
     override func viewDidLoad() {
-        super.viewDidLoad() 
+        super.viewDidLoad()
+        canvasView.clipsToBounds = true
+        setupGestures()
     }
 
     override func loadView() {
@@ -81,7 +93,6 @@ class ViewController: UIViewController {
         if let redoButtonImage = UIImage(named: "redo") {
             redoButton.setImage(resizeImage(image: redoButtonImage, targetSize: CGSize(width: 30, height: 30)), for: .normal)
         }
-        
     }
     
     func resizeImage(image: UIImage, targetSize: CGSize) -> UIImage {
@@ -106,6 +117,5 @@ class ViewController: UIViewController {
         
         return newImage!.withRenderingMode(.alwaysOriginal)
     }
-    
 }
 

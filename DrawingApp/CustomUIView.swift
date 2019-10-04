@@ -9,32 +9,23 @@
 import UIKit
 
 class CustomUIView: UIView {
-    
-    struct PathWithColour {
-        let line: UIBezierPath
-        var colour: UIColor
-    }
-    
+
     enum Mode {
         case brush
+        case marker
         case eraser
         case move
     }
     
-    
-    var strokeColour = #colorLiteral(red: 0.8889197335, green: 0.78421344, blue: 0.1864610223, alpha: 1)
-    var eraserColour = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+    var strokeColour = #colorLiteral(red: 0.5704585314, green: 0.5704723597, blue: 0.5704649091, alpha: 1)
     var strokeSize = 15
     var mode = Mode.brush
-    var path = UIBezierPath()
-
-    var pathArray = [PathWithColour]()
-    
+    var drawingPath = UIBezierPath()
     let drawingView = UIImageView()
+    
     var layerArray = [UIImageView]()
     var redoLayerArray = [UIImageView]()
 
-    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setup()
@@ -51,47 +42,46 @@ class CustomUIView: UIView {
     }
     
     func setupPath() {
-        path = UIBezierPath()
-        path.lineWidth = CGFloat(strokeSize)
-        path.lineCapStyle = .round
-        path.lineJoinStyle = .round
+        drawingPath = UIBezierPath()
+        drawingPath.lineWidth = CGFloat(strokeSize)
+        if mode == .brush {
+            drawingPath.lineCapStyle = .round
+        } else {
+            drawingPath.lineCapStyle = .square
+        }
+        drawingPath.lineJoinStyle = .round
     }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if mode != .move {
+        if mode != .move && mode != .eraser {
             let touch = touches.first!
             setupPath()
-            path.move(to: touch.location(in: self))
+            drawingPath.move(to: touch.location(in: self))
             updateImageView()
         }
-        
     }
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if mode != .move {
+        if mode != .move && mode != .eraser {
             let touch = touches.first!
-            path.addLine(to: touch.location(in: self))
+            drawingPath.addLine(to: touch.location(in: self))
             updateImageView()
         }
-
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if mode != .move {
+        if mode != .move && mode != .eraser {
             let touch = touches.first!
             endTouches(at: touch.location(in: self))
 
-            if mode == .brush {
-                pathArray.append(PathWithColour(line: path, colour: strokeColour))
-            }
-
             UIGraphicsBeginImageContextWithOptions(bounds.size, false, 0)
-            if mode == .eraser {
-                eraserColour.setStroke()
+            strokeColour.setStroke()
+            if mode == .brush {
+                drawingPath.stroke(with: .normal, alpha: 1.0)
             } else {
-                strokeColour.setStroke()
+                drawingPath.stroke(with: .normal, alpha: 0.5)
             }
-            path.stroke(with: .normal, alpha: 1.0)
+            
             let newLayerImage = UIGraphicsGetImageFromCurrentImageContext()
             UIGraphicsEndImageContext()
             let newLayer = UIImageView(image: newLayerImage)
@@ -100,33 +90,33 @@ class CustomUIView: UIView {
             layerArray.append(newLayer)
             self.addSubview(newLayer)
             self.bringSubviewToFront(drawingView)
+            drawingView.image = nil
 
             redoLayerArray.removeAll()
         }
-
     }
     
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if mode != .move {
+        if mode != .move && mode != .eraser {
             let touch = touches.first!
             endTouches(at: touch.location(in: self))
         }
     }
 
     func endTouches(at point: CGPoint) {
-        path.addLine(to: point)
+        drawingPath.addLine(to: point)
         updateImageView()
     }
     
     func updateImageView() {
         UIGraphicsBeginImageContextWithOptions(bounds.size, false, 0)
 
-        if mode == .eraser {
-            eraserColour.setStroke()
+        strokeColour.setStroke()
+        if mode == .brush {
+            drawingPath.stroke(with: .normal, alpha: 1.0)
         } else {
-            strokeColour.setStroke()
+            drawingPath.stroke(with: .normal, alpha: 0.5)
         }
-        path.stroke(with: .normal, alpha: 1.0)
         
         let img = UIGraphicsGetImageFromCurrentImageContext()
 
@@ -141,7 +131,6 @@ class CustomUIView: UIView {
         drawingView.center = CGPoint(x: bounds.midX, y: bounds.midY)
         
         layerArray.removeAll()
-        pathArray.removeAll()
         redoLayerArray.removeAll()
         
         for view in self.subviews {
@@ -158,7 +147,6 @@ class CustomUIView: UIView {
             if let redoLayer = layerArray.popLast() {
                 redoLayerArray.append(redoLayer)
                 redoLayer.removeFromSuperview()
-                print("removed from superview")
             }
         }
     }
@@ -170,23 +158,16 @@ class CustomUIView: UIView {
         }
         self.bringSubviewToFront(drawingView)
     }
-    
-//    func pointInNewSystem(_ point: CGPoint, _ layerIndex: Int) -> CGPoint {
-//        return CGPoint(x: point.x - (self.bounds.minX - self.subviews[layerIndex].frame.minX),
-//                       y: point.y - (self.bounds.minY - self.subviews[layerIndex].frame.minY))
-//    }
-    
+        
     var moveLayerIndex: Int?
         
     @objc func handlePanGesture(gesture: UIPanGestureRecognizer) {
         switch gesture.state {
         case .began:
             
-            drawingView.image = nil
             for (i, view) in self.subviews.enumerated() {
                 if view.toImageView().alphaAtPoint(point: gesture.location(in: view)) != 0.0 {
                         moveLayerIndex = i
-                        print("IF 2")
                     }
             }
 
@@ -198,18 +179,35 @@ class CustomUIView: UIView {
             gesture.setTranslation(CGPoint.zero, in: gesture.view)
             
         case .ended:
-            print("ended")
             moveLayerIndex = nil
 
         default:
             break
         }
-        }
+    }
     
+    var indexOfViewToBeRemoved: Int?
+    
+    @objc func handleTap(gesture: UITapGestureRecognizer) {
+        guard gesture.view != nil, self.subviews.count != 1 else { return }
+        print("tap")
+        
+        if gesture.state == .ended {
+            for (i, view) in self.subviews.enumerated() {
+                if view.toImageView().alphaAtPoint(point: gesture.location(in: view)) != 0.0 {
+                        indexOfViewToBeRemoved = i
+                        print(i)
+                    }
+            }
+            
+            if let index = indexOfViewToBeRemoved, self.subviews.count != 1 {
+                self.subviews[index].removeFromSuperview()
+            }
+        }
+    }
 }
 
 extension UIImageView {
-    
     func alphaAtPoint(point: CGPoint) -> CGFloat {
         
         var pixel: [UInt8] = [0, 0, 0, 0]
@@ -228,24 +226,6 @@ extension UIImageView {
         
         return floatAlpha
     }
-    
-}
-
-extension UIImage {
-    func getPixelColor(pos: CGPoint) -> UIColor {
-
-        let pixelData = self.cgImage!.dataProvider!.data
-        let data: UnsafePointer<UInt8> = CFDataGetBytePtr(pixelData)
-
-        let pixelInfo: Int = ((Int(self.size.width) * Int(pos.y)) + Int(pos.x)) * 4
-
-        let r = CGFloat(data[pixelInfo]) / CGFloat(255.0)
-        let g = CGFloat(data[pixelInfo+1]) / CGFloat(255.0)
-        let b = CGFloat(data[pixelInfo+2]) / CGFloat(255.0)
-        let a = CGFloat(data[pixelInfo+3]) / CGFloat(255.0)
-
-        return UIColor(red: r, green: g, blue: b, alpha: a)
-    }
 }
 
 extension UIView {
@@ -258,10 +238,3 @@ extension UIView {
     }
 }
 
-extension CGPoint {
-    func distance(from b: CGPoint) -> CGFloat {
-        let xDist = self.x - b.x
-        let yDist = self.y - b.y
-        return CGFloat(sqrt(xDist * xDist + yDist * yDist))
-    }
-}

@@ -149,8 +149,59 @@
                             <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" alignment="center" spacing="31" translatesAutoresizingMaskIntoConstraints="NO" id="RSj-er-hYJ">
                                 <rect key="frame" x="20" y="638" width="374" height="68"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5bQ-nv-jQI">
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="m1g-zs-jbf">
                                         <rect key="frame" x="0.0" y="9" width="50" height="50"/>
+                                        <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="m1g-zs-jbf" secondAttribute="height" multiplier="1:1" id="dID-ag-p3c"/>
+                                        </constraints>
+                                        <state key="normal" backgroundImage="brush"/>
+                                        <connections>
+                                            <action selector="brushButtonTap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="duS-E4-2hH"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7uL-43-E4H">
+                                        <rect key="frame" x="81" y="9" width="50" height="50"/>
+                                        <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="7uL-43-E4H" secondAttribute="height" multiplier="1:1" id="2py-eF-MNx"/>
+                                            <constraint firstAttribute="width" constant="50" id="OUu-eu-vry"/>
+                                        </constraints>
+                                        <state key="normal" image="marker-pen">
+                                            <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="markerPenButtonTap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="aY0-eS-IlC"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bQy-Wf-D1X">
+                                        <rect key="frame" x="162" y="9" width="50" height="50"/>
+                                        <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="bQy-Wf-D1X" secondAttribute="height" multiplier="1:1" id="WrC-NJ-Bmi"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" pointSize="40"/>
+                                        <state key="normal" backgroundImage="eraser"/>
+                                        <connections>
+                                            <action selector="eraserButtonTap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="fsk-w2-Nby"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hTn-eO-opj">
+                                        <rect key="frame" x="243" y="9" width="50" height="50"/>
+                                        <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="hTn-eO-opj" secondAttribute="height" multiplier="1:1" id="yVi-hy-23k"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                        <state key="normal" backgroundImage="move">
+                                            <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="moveButtonTap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="nKC-6l-CCN"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5bQ-nv-jQI">
+                                        <rect key="frame" x="324" y="9" width="50" height="50"/>
                                         <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="5bQ-nv-jQI" secondAttribute="height" multiplier="1:1" id="nb7-dg-1WF"/>
@@ -161,58 +212,6 @@
                                         </state>
                                         <connections>
                                             <action selector="clearCanvas:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Se1-w3-i1B"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7uL-43-E4H">
-                                        <rect key="frame" x="81" y="9" width="50" height="50"/>
-                                        <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" secondItem="7uL-43-E4H" secondAttribute="height" multiplier="1:1" id="2py-eF-MNx"/>
-                                            <constraint firstAttribute="width" constant="50" id="OUu-eu-vry"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" type="system" pointSize="40"/>
-                                        <state key="normal" backgroundImage="bucket">
-                                            <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        </state>
-                                        <connections>
-                                            <action selector="fillBUttonTap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="2Z6-c5-FIP"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hTn-eO-opj">
-                                        <rect key="frame" x="162" y="9" width="50" height="50"/>
-                                        <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" secondItem="hTn-eO-opj" secondAttribute="height" multiplier="1:1" id="yVi-hy-23k"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                        <state key="normal" backgroundImage="move">
-                                            <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        </state>
-                                        <connections>
-                                            <action selector="moveLayer:" destination="BYZ-38-t0r" eventType="touchUpInside" id="nKC-6l-CCN"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="m1g-zs-jbf">
-                                        <rect key="frame" x="243" y="9" width="50" height="50"/>
-                                        <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" secondItem="m1g-zs-jbf" secondAttribute="height" multiplier="1:1" id="dID-ag-p3c"/>
-                                        </constraints>
-                                        <state key="normal" backgroundImage="paint-brush"/>
-                                        <connections>
-                                            <action selector="brushMode:" destination="BYZ-38-t0r" eventType="touchUpInside" id="duS-E4-2hH"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bQy-Wf-D1X">
-                                        <rect key="frame" x="324" y="9" width="50" height="50"/>
-                                        <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" secondItem="bQy-Wf-D1X" secondAttribute="height" multiplier="1:1" id="WrC-NJ-Bmi"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" type="system" pointSize="40"/>
-                                        <state key="normal" backgroundImage="eraser"/>
-                                        <connections>
-                                            <action selector="eraserMode:" destination="BYZ-38-t0r" eventType="touchUpInside" id="fsk-w2-Nby"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -308,10 +307,10 @@
         </scene>
     </scenes>
     <resources>
-        <image name="bucket" width="256" height="256"/>
+        <image name="brush" width="240" height="240"/>
         <image name="delete" width="256" height="256"/>
         <image name="eraser" width="256" height="256"/>
+        <image name="marker-pen" width="240" height="240"/>
         <image name="move" width="256" height="256"/>
-        <image name="paint-brush" width="256" height="256"/>
     </resources>
 </document>
